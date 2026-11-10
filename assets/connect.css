@@ -1,0 +1,288 @@
+/* 接通建联（阶段 1 教材页）增量样式
+   复用 manual.css 的记分牌 / 长图窗 / 四块分析 / 速查表，
+   这里只补四件这一步独有的：四要件卡、四色记分牌、判据表、禁区列表。 */
+
+/* ---------- 顶部四要件（深色 hero 内） ---------- */
+.stage4 {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin: 0 0 32px;
+}
+.stage4 .st {
+  position: relative;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.13);
+  border-left-width: 3px;
+  border-radius: 12px;
+  padding: 14px 15px 15px;
+  min-width: 0;
+}
+.stage4 .st.s1 { border-left-color: #7FA9D4; }
+.stage4 .st.s2 { border-left-color: #A78BFA; }
+.stage4 .st.s3 { border-left-color: #6FBFAF; }
+.stage4 .st.s4 { border-left-color: #D8B45F; }
+.stage4 .stn {
+  position: absolute; top: 12px; right: 13px;
+  font-size: 18px; line-height: 1; font-weight: 800;
+  color: rgba(255,255,255,.2);
+}
+.stage4 .st b {
+  display: block; font-size: 15px; font-weight: 800; letter-spacing: .04em;
+  color: #fff; margin-bottom: 8px;
+}
+.stage4 .st .stk {
+  display: block; font-size: 10px; line-height: 1.4;
+  letter-spacing: .09em; color: rgba(255,255,255,.4); margin-bottom: 3px;
+}
+.stage4 .st p {
+  margin: 0 0 9px; font-size: 14.5px; line-height: 1.45;
+  color: #fff; font-weight: 400; letter-spacing: .01em;
+}
+.stage4 .stq {
+  display: block; font-size: 11.5px; line-height: 1.65; color: rgba(255,255,255,.62);
+  padding-top: 8px; border-top: 1px solid rgba(255,255,255,.1);
+}
+
+/* ---------- 四色记分牌（与长图四色同一套） ---------- */
+.mm.c1 { background: #E8EFFF; color: #2563EB; border-color: #CFDCFA; }
+.mm.c2 { background: #F2EBFE; color: #7C3AED; border-color: #E1D3FB; }
+.mm.c3 { background: var(--greenbg); color: var(--green); border-color: #D2E3DE; }
+.mm.c4 { background: var(--amberbg); color: var(--amber); border-color: #EBDBB6; }
+
+/* ---------- 判据表 ---------- */
+.cc-tblwrap { margin-top: 18px; }
+.cc-tbl { table-layout: fixed; font-size: 13px; }
+.cc-tbl th:nth-child(1) { width: 40px; }
+.cc-tbl th:nth-child(2) { width: 84px; }
+.cc-tbl th:nth-child(3) { width: 236px; }
+.cc-tbl th:nth-child(4) { width: 236px; }
+.cc-tbl thead th { white-space: nowrap; }
+.cc-tbl td { vertical-align: top; padding-top: 11px; padding-bottom: 11px; line-height: 1.7; }
+.cc-tbl td.cno {
+  font-size: 15px; font-weight: 800; color: var(--navy);
+  white-space: nowrap; text-align: center;
+}
+.cc-tbl td.cno2 { color: var(--ink3); font-size: 12.4px; }
+.cc-tbl td.chit { color: #2C3644; }
+.cc-tbl tbody tr:nth-child(4) { background: #FDFBF5; }
+.cc-tbl tbody tr:nth-child(4) td.cno { color: var(--amber); }
+
+/* ---------- 三条说明 ---------- */
+.cc-notes {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin: 26px 0 6px;
+}
+.cc-notes .cn {
+  background: #FBF9F4; border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 18px 17px;
+}
+.cc-notes .cn h4 {
+  margin: 0 0 8px; font-size: 13.5px; font-weight: 800; letter-spacing: .02em;
+  color: var(--ink);
+}
+.cc-notes .cn h4::before {
+  content: ""; display: inline-block; width: 3px; height: 12px;
+  background: var(--navy); border-radius: 2px; margin-right: 8px; vertical-align: -1px;
+}
+.cc-notes .cn p {
+  margin: 0 0 8px; font-size: 12.6px; line-height: 1.82; color: var(--ink2);
+}
+.cc-notes .cn p:last-child { margin-bottom: 0; }
+.cc-notes .cn p b { color: var(--ink); }
+
+/* ---------- 分区（两种线索 / 禁区 / 沉默） ---------- */
+.cc-part {
+  margin: 34px 2px 0; padding-left: 16px;
+  border-left: 3px solid var(--navy);
+}
+.cc-part h3 {
+  margin: 0 0 7px; font-size: 16px; font-weight: 800; letter-spacing: .01em;
+  color: var(--ink);
+}
+.cc-part > p {
+  margin: 0 0 14px; font-size: 13.2px; line-height: 1.85; color: var(--ink2);
+}
+.cc-part > p b { color: var(--ink); }
+
+/* 两类线索对照 */
+.cc-lead2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cc-lead2 .l2 {
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 15px 17px 16px; background: #fff;
+}
+.cc-lead2 .l2.l2b { background: #FBF9F4; border-color: #E7E1D2; }
+.cc-lead2 .l2t {
+  display: inline-block; margin-bottom: 10px; padding: 2px 10px 3px;
+  border-radius: 999px; background: #DCE6F4; color: #1B3A63;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .05em;
+}
+.cc-lead2 .l2b .l2t { background: #F2E3C4; color: #7A4A08; }
+.cc-lead2 .l2q {
+  margin: 0 0 9px; padding: 9px 12px;
+  background: #F7F6F2; border-left: 2px solid #D9D4C6; border-radius: 0 6px 6px 0;
+  font-size: 12.4px; line-height: 1.8; color: #3A4450;
+}
+.cc-lead2 .l2q:last-of-type { margin-bottom: 10px; }
+.cc-lead2 .l2n {
+  margin: 0; font-size: 12px; line-height: 1.8; color: var(--ink3);
+}
+.cc-lead2 .l2n b { color: var(--ink2); }
+
+/* 禁区列表 */
+.cc-ban {
+  margin: 0 0 12px; padding: 0; list-style: none;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;
+}
+.cc-ban li {
+  position: relative; padding: 8px 12px 8px 30px;
+  background: #FDF3F0; border: 1px solid #F2DAD3; border-radius: 8px;
+  font-size: 12.8px; line-height: 1.6; color: #8A3A28;
+}
+.cc-ban li::before {
+  content: "✕"; position: absolute; left: 11px; top: 8px;
+  font-size: 11px; font-weight: 800; color: #C0563C;
+}
+.cc-ban li.b2 {
+  background: #FDF3F0; border-color: #F2DAD3; color: #8A3A28;
+}
+.cc-ban li.b2::before { content: "⚠"; color: #C0563C; }
+.cc-fine { font-size: 12.2px; line-height: 1.8; color: var(--ink3); margin: 0; }
+.cc-fine b { color: var(--ink2); }
+
+/* C1 区的 h2 在删减时被去掉了，section 头只剩一个「C1 / 口径」小标签。
+   .sec-head 的 34px 下边距再叠上 .cc-part 的 34px 上边距，中间会空出 120px，
+   看着像漏了一段。这里把 section 头的下边距收掉。 */
+#c-rule .sec-head { margin-bottom: 6px; }
+
+/* 代称清单（② 补充：客户不报名字时用代称顶） */
+.cc-alias {
+  margin: 0 0 14px; padding: 0; list-style: none;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.cc-alias li {
+  padding: 5px 15px 6px; border-radius: 999px;
+  background: #F2EBFE; border: 1px solid #E1D3FB; color: #7C3AED;
+  font-size: 13px; font-weight: 700; letter-spacing: .02em;
+}
+/* 算 / 不算 两栏对照 */
+.cc-vs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.cc-vs .vs { border: 1px solid; border-radius: 10px; padding: 11px 14px 12px; }
+.cc-vs .vs p { margin: 0; font-size: 12.2px; line-height: 1.8; }
+.cc-vs .vs p b { color: var(--ink); }
+.cc-vs .vst {
+  display: inline-block; margin-bottom: 6px; padding: 1px 9px 2px;
+  border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .06em;
+}
+.cc-vs .vs-y { background: #F1FAF6; border-color: #D2E3DE; }
+.cc-vs .vs-y .vst { background: #D8EFE6; color: #0B7A56; }
+.cc-vs .vs-y p { color: #2C4A40; }
+.cc-vs .vs-n { background: #FDF3F0; border-color: #F2DAD3; }
+.cc-vs .vs-n .vst { background: #F7DDD5; color: #8A3A28; }
+.cc-vs .vs-n p { color: #6E3C2F; }
+
+/* ---------- 速查表（一行） ---------- */
+.cc-quick th:nth-child(1) { width: 120px; }
+.cc-quick th:nth-child(2) { width: 90px; }
+.cc-quick th:nth-child(3) { width: 300px; }
+.cc-quick th:nth-child(4) { width: 300px; }
+.cc-quick td.mmcell .mm { font-size: 10.5px; }
+
+/* ---------- 卡片 ---------- */
+.cc-case .qcard-meta { line-height: 2; }
+/* 「可以直接抄的原话」比左栏短，默认会被 grid 拉成等高，框里空一大片。
+   这一块本来就该按内容高度收口。 */
+.cc-case .qreuse { align-self: start; }
+
+/* footer 的 .eyebrow 是给深色 hero 写的一套（白字），页脚是浅底，直接套会看不见。
+   style.css 被 6 个页面共用、check.py 逐字节比对，不能动，这里局部覆盖。 */
+.foot .eyebrow { color: var(--ink3); margin-bottom: 9px; letter-spacing: .2em; }
+.foot .eyebrow::before { background: var(--line); }
+
+/* ---------- 口径整体折叠：一到页面只看得到聊天记录 ---------- */
+/* 首屏只剩标题 + 一条折叠条 + 聊天记录。判据卡、两种线索、代称、禁区全在
+   <details> 里，点开才占位；不用 JS 也能开合，file:// 下照样工作。 */
+.hero-c { padding: 34px 28px 28px; }
+.hero-c h1 { margin-bottom: 12px; font-size: clamp(30px, 3.6vw, 44px); }
+.hero-c .stage4 { margin-bottom: 22px; }
+.hero-c .sub:empty { display: none; }
+.hero-c .hero-meta { margin-top: 20px; padding-top: 16px; }
+
+.cc-fold {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--paper); box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.cc-fold-sum {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 17px 22px; cursor: pointer; list-style: none;
+  border-left: 3px solid var(--navy); user-select: none;
+}
+.cc-fold-sum::-webkit-details-marker { display: none; }
+.cc-fold-sum::marker { content: ""; }
+.cc-fold-sum:hover { background: #FBFAF7; }
+.cc-fold[open] > .cc-fold-sum { background: #FBFAF7; border-bottom: 1px solid var(--line2); }
+.ccf-no {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: .16em; color: var(--ink3);
+}
+.ccf-t { font-size: 15.5px; font-weight: 800; letter-spacing: .01em; color: var(--ink); }
+.ccf-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ccf-chips b {
+  font-size: 11.5px; font-weight: 600; line-height: 1;
+  padding: 5px 9px 6px; border-radius: 999px;
+  background: #F4F1EA; border: 1px solid var(--line); color: var(--ink2);
+}
+.ccf-act { margin-left: auto; white-space: nowrap; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ccf-act .t2 { display: none; }
+.cc-fold[open] .ccf-act .t1 { display: none; }
+.cc-fold[open] .ccf-act .t2 { display: inline; }
+
+.cc-fold-body { padding: 2px 22px 24px; }
+/* 折进去的第一块自己要留一点上边距，否则贴着折叠条的分隔线 */
+.cc-fold-body > .cc-part:first-child { margin-top: 16px; }
+
+/* 折叠后 C1 只剩一条，原来的 76px 上边距会顶出一大块空白。
+   把 C1 收上去、C2 拉近，聊天记录才不会掉到首屏外面。 */
+#c-rule { padding-top: 18px; padding-bottom: 2px; }
+#c-good { padding-top: 22px; }
+/* C2 只有一个章节、下面就是聊天卡片，标题不必占两行：编号和标题并排放，
+   省下的四十来像素刚好让聊天卡片露出首屏。 */
+#c-good .sec-head {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 12px;
+}
+#c-good .sec-no { margin-bottom: 0; }
+#c-good .sec-head h2 { font-size: 20px; margin: 0; letter-spacing: .01em; }
+
+@media (max-width: 1100px) {
+  .stage4 { grid-template-columns: 1fr 1fr; }
+  .cc-notes { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .stage4 { grid-template-columns: 1fr; gap: 9px; }
+  .cc-tbl { font-size: 12.2px; }
+  .cc-lead2, .cc-ban, .cc-vs { grid-template-columns: 1fr; }
+  .cc-part { padding-left: 12px; }
+  .cc-fold-sum { padding: 14px 16px; gap: 8px; }
+  .ccf-t { font-size: 14.5px; }
+  .ccf-act { margin-left: auto; }
+  .cc-fold-body { padding: 0 14px 18px; }
+  #c-rule { padding-top: 24px; }
+  #c-good { padding-top: 34px; }
+}
+
+/* 手机上「一进来就看到聊天记录」也要成立：标题压短、折叠条的说明标签收掉，
+   首屏才不会全被页头吃掉。 */
+@media (max-width: 600px) {
+  .hero-c { padding: 26px 18px 24px; }
+  .hero-c h1 { font-size: 26px; margin-bottom: 10px; }
+  .hero-c .hero-meta { margin-top: 14px; padding-top: 12px; }
+  .cc-fold-sum { padding: 13px 14px; row-gap: 6px; }
+  .ccf-chips { display: none; }
+  .ccf-act { font-size: 12px; }
+  /* 四张判据卡在手机上一列排会把聊天记录挤到两屏之后，改两列、字小一号 */
+  .hero-c .stage4 { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .hero-c .stage4 .st { padding: 11px 11px 12px; }
+  .hero-c .stage4 .st b { font-size: 13.5px; margin-bottom: 6px; }
+  .hero-c .stage4 .st p { font-size: 13px; margin-bottom: 7px; }
+  .hero-c .stage4 .stq { font-size: 10.5px; line-height: 1.55; padding-top: 6px; }
+  .hero-c .stage4 .stn { font-size: 14px; top: 9px; right: 9px; }
+}

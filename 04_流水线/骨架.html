@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>销售聊天问题点汇总报告｜体德智训</title>
+<meta name="description" content="【填：一句话摘要，含组数、条数、问题点类数、片段数】">
+<link rel="stylesheet" href="assets/style.css?v=10">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     顶部概要条 · 数据来源与依据（交付必填，check.py 第 11 项查）
+     五段固定：标题 ｜ 数据 ｜ 依据 ｜ 判别明细 ｜ 流水线
+     写法：一行读到底，不换行不分点；数据写真实行数与快照号，
+     依据写实际用到的文件名，后两段指向本报告目录里真实存在的文件夹
+     ══════════════════════════════════════════════════════════ -->
+<div class="prov">
+  <div class="prov-in">
+    <p><span class="seg"><b>【填：报告名】</b>　【填：销售 / 批次】</span><span class="seg"><em>数据</em>【填：导出渠道 + 格式 + 条数 + 会话数 + 快照号 + 清洗后组数】</span></p>
+    <p><span class="seg"><em>依据</em>【填：《…》《…》】</span><span class="seg"><em>底稿</em><a href="00_数据来源说明.md">00_数据来源说明</a><a href="02_过程文件/">02_过程文件</a><a href="01_原始导出/">01_原始导出</a><a href="04_流水线/README_质检报告流水线.md">04_流水线</a></span></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     顶栏 · 固定结构，只改品牌文字
+     ══════════════════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-in">
+    <div class="nav-brand"><i></i><span>体德智训 · 对话质检</span></div>
+    <div class="nav-links">
+      <a href="#overview">方法</a>
+      <a href="#problems">问题点</a>
+      <a href="#rhythm">谈单节奏</a>
+      <a href="#good">优秀片段</a>
+      <a href="#actions">落地建议</a>
+    </div>
+  </div>
+  <div class="nav-progress"></div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     封面 · 固定结构
+     hero-stats 固定 4 格；hero-meta 是底部小字标签，可增减
+     ══════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-in">
+    <div class="eyebrow">Sales Conversation Audit · 2026</div>
+    <h1>销售聊天<br><em>问题点</em>汇总报告</h1>
+    <p class="sub">【填：3 句话以内说明这批数据是什么、报告分几段讲什么】</p>
+    <div class="hero-stats">
+      <div><b>37</b><span>组完整对话</span></div>
+      <div><b>5313</b><span>条消息逐条过</span></div>
+      <div><b>12</b><span>类成立的问题</span></div>
+      <div><b>8</b><span>段正面标杆</span></div>
+    </div>
+    <div class="hero-quote">【填：一句判断句，加粗关键词】</div>
+    <div class="hero-meta"><span>数据区间 2026.06 – 2026.11</span><span>37 组对话</span><span>5313 条消息</span></div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 01 / 方法
+     构成：sec-head → .method（3 张卡，data-n 编号）→ .revoke（撤销说明，没有就整块删）
+     ══════════════════════════════════════════════════════════ -->
+<section class="sec" id="overview">
+<div class="sec-head rv"><div class="sec-no">PART 01 / 方法</div><h2>先说清楚：这份结论是怎么来的</h2><p class="lead">【填：这批数据怎么读的、判定依据是什么】</p></div>
+<div class="method rv">
+<div class="card" data-n="1"><h4>客户有没有给出信号？</h4><p>到访、问价、异议、拒绝、顾虑。没有信号就不是问题。</p></div>
+<div class="card" data-n="2"><h4>销售有没有在合理时间、用合适方式回应？</h4><p>响应时限、回复形态、是否答到客户问的那一句。</p></div>
+<div class="card" data-n="3"><h4>后续有没有闭环？</h4><p>约定具体时间、兑现承诺、持续个性化触达。</p></div>
+</div>
+<div class="revoke rv"><h4><span class="badge">撤销 N 组</span>旧版列为问题、逐条读原文后判定不成立</h4><p>【填：为什么撤销】</p><ul>
+<li><b>C19 → 销售名｜客户名</b>：【填：撤销理由】</li>
+<li><b>C35 → 销售名｜客户名</b>：【填：撤销理由】</li>
+</ul></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 02 / 问题点
+     dist 条形图：按组数降序，width = 该组数 / 最大值 × 100%，hi = 4 组以上
+     .pcard：第一个加 open 类，其余收起。P1..Pn 与 id="card-Pn" 对应
+     ══════════════════════════════════════════════════════════ -->
+<section class="sec" id="problems">
+<div class="sec-head rv"><div class="sec-no">PART 02 / 问题点</div><h2>N 类问题 · N 张截图 · 每条都能对原文</h2><p class="lead">【填：排序口径 + 怎么用】</p></div>
+
+<div class="dist-legend rv"><span><i class="a"></i>4 组以上的高频问题</span><span><i class="b"></i>1–3 组的个别问题</span><span style="margin-left:auto">数字为该问题成立的对话组数</span></div>
+<div class="dist rv">
+<div class="dist-row hi"><div class="nm"><b>P3</b>　课时/价格口径不一致</div><div class="dist-bar"><i style="width:100%"></i></div><div class="vv">6</div></div>
+<div class="dist-row"><div class="nm"><b>P7</b>　语音回复文字提问</div><div class="dist-bar"><i style="width:50%"></i></div><div class="vv">3</div></div>
+</div>
+
+<div class="tbl-bar rv" style="margin-bottom:16px"><button class="fbtn on" id="toggleAll">全部展开</button><span style="font-size:12.5px;color:var(--ink3)">共 N 条，默认展开第一条</span><span class="idnote">【填：ID 来源说明，没有 ID 就删掉这个 span】</span></div>
+
+<div class="plist">
+<div class="pcard open" id="card-P1">
+<div class="pcard-h"><div class="pid">P1</div><div><div class="ptitle">到访信号未锁定</div><div class="pmeta"><span class="chip">到访信号</span><span class="chip gray">2 张截图</span></div></div><div class="pcount">2<s>组</s></div><div class="pcaret">▾</div></div>
+<div class="pbody">
+<div class="judge"><b>判定口径　</b>【填：什么情况计入、什么情况不计入。这段是全文最重要的部分，要能被人拿去复核】</div>
+
+<!-- 一个案例 = 左文字 + 右截图 -->
+<div class="case">
+<div><div class="case-meta"><span class="case-no" title="原始编号 C30　｜　来源文件：xxx.txt">C30</span><span class="case-who" title="销售名 → 客户名">销售全名 → <b>客户名</b></span><span class="cid" title="线索 ID 144572 ｜ 落入 2026-09-13 ｜ 官抖-短视频（广州）">144572</span><span class="lvl" data-lv="B" title="意向级别 ｜ 1个月内未转化">B-意向明确</span></div><p class="case-txt">9.13 【填：发生日 + 事实 + 后果，带具体数字】</p></div>
+<div class="case-shot" data-zoom="C30 ｜ 销售名 → 客户名"><img src="assets/prob/C30_P1.png" alt="C30" loading="lazy"></div>
+</div>
+
+<div class="case">
+<div><div class="case-meta"><span class="case-no" title="原始编号 C12">C12</span><span class="case-who">销售全名 → <b>客户名</b></span><span class="cid warn" title="线索表姓名与报告昵称不同，按同日落入判为同一人 ｜ 线索 ID 153349">153349</span><span class="lvl" data-lv="C" title="意向级别 ｜ 7日内未转化">C-意向较弱</span></div><p class="case-txt">【填】</p></div>
+<div class="case-shot" data-zoom="C12 ｜ 销售名 → 客户名"><img src="assets/prob/C12_P1.png" alt="C12" loading="lazy"></div>
+</div>
+
+</div>
+</div>
+
+<div class="pcard" id="card-P2">
+<div class="pcard-h"><div class="pid">P2</div><div><div class="ptitle">响应超时、问题未闭环</div><div class="pmeta"><span class="chip">响应</span><span class="chip gray">1 张截图</span></div></div><div class="pcount">1<s>组</s></div><div class="pcaret">▾</div></div>
+<div class="pbody">
+<div class="judge"><b>判定口径　</b>【填】</div>
+<div class="case">
+<div><div class="case-meta"><span class="case-no">C05</span><span class="case-who">销售全名 → <b>客户名</b></span><span class="cid none">无 CRM ID</span></div><p class="case-txt">【填】</p></div>
+<div class="case-shot" data-zoom="C05 ｜ 销售名 → 客户名"><img src="assets/prob/C05_P2.png" alt="C05" loading="lazy"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 03 / 谈单节奏
+     构成：stages（六阶段）→ funnel（累计漏斗）→ concl（3 张结论卡）→ 明细表 → rcases（4 组典型）
+     ══════════════════════════════════════════════════════════ -->
+<section class="sec" id="rhythm">
+<div class="sec-head rv"><div class="sec-no">PART 03 / 谈单节奏</div><h2>六个阶段，N 组逐组定位：卡在哪、卡多久、有没有抢跑</h2><p class="lead">【填：这一节回答什么问题、判定原则】</p></div>
+
+<div class="stages rv">
+<div class="stage"><div class="stage-in"><div class="stage-no">S1</div><div class="stage-nm">接通建联</div><div class="stage-n">36<s>/37 组</s></div><div class="stage-drop">— 无流失</div><div class="stage-desc">自我介绍或称呼 + 客户有实质回应</div></div></div>
+<div class="stage"><div class="stage-in"><div class="stage-no">S2</div><div class="stage-nm">定级探需</div><div class="stage-n">36<s>/37 组</s></div><div class="stage-drop">−1 组</div><div class="stage-desc">定级四问中 ≥2 问有客户回答</div></div></div>
+<div class="stage"><div class="stage-in"><div class="stage-no">S3</div><div class="stage-nm">价值传递</div><div class="stage-n">35<s>/37 组</s></div><div class="stage-drop">−1 组</div><div class="stage-desc">讲课程形态 + 讲学完能干什么 + 挂到客户本人</div></div></div>
+<div class="stage"><div class="stage-in"><div class="stage-no">S4</div><div class="stage-nm">方案报价</div><div class="stage-n">28<s>/37 组</s></div><div class="stage-drop">−7 组</div><div class="stage-desc">给出具体金额，并与班型／证书对应</div></div></div>
+<div class="stage"><div class="stage-in"><div class="stage-no">S5</div><div class="stage-nm">异议处理</div><div class="stage-n">11<s>/37 组</s></div><div class="stage-drop">−17 组</div><div class="stage-desc">命中共情／举证／给下一步中 ≥2 项</div></div></div>
+<div class="stage"><div class="stage-in"><div class="stage-no">S6</div><div class="stage-nm">逼单收口</div><div class="stage-n">7<s>/37 组</s></div><div class="stage-drop">−4 组</div><div class="stage-desc">推动定金／到校／回访，双方落到具体时间</div></div></div>
+</div>
+
+<div class="funnel rv"><h3>累计漏斗：走到这一步的还有多少组</h3><p class="hint">口径为「最高阶段 ≥ 该阶段」的组数，非单阶段停留数。最右列为相对上一阶段的流失。</p>
+<div class="fn-row"><div class="fn-lbl"><b>S1</b>　接通建联</div><div class="fn-track"><div class="fn-fill" style="width:97%">36</div></div><div class="fn-drop zero">0</div></div>
+<div class="fn-row"><div class="fn-lbl"><b>S2</b>　定级探需</div><div class="fn-track"><div class="fn-fill" style="width:97%">36</div></div><div class="fn-drop zero">0</div></div>
+<div class="fn-row"><div class="fn-lbl"><b>S3</b>　价值传递</div><div class="fn-track"><div class="fn-fill" style="width:95%">35</div></div><div class="fn-drop">−1</div></div>
+<div class="fn-row"><div class="fn-lbl"><b>S4</b>　方案报价</div><div class="fn-track"><div class="fn-fill" style="width:76%">28</div></div><div class="fn-drop">−7</div></div>
+<div class="fn-row"><div class="fn-lbl"><b>S5</b>　异议处理</div><div class="fn-track"><div class="fn-fill" style="width:30%">11</div></div><div class="fn-drop">−17</div></div>
+<div class="fn-row last"><div class="fn-lbl"><b>S6</b>　逼单收口</div><div class="fn-track"><div class="fn-fill" style="width:19%">7</div></div><div class="fn-drop">−4</div></div>
+<p class="note">最大断点在 <b>S4 → S5</b>：【填】</p></div>
+
+<div class="concl rv">
+<div class="card"><div class="tag">结论 01</div><h3>【填：标题，可用 em 强调】</h3><p>【填：一句话】</p><div class="split"><div><b>16</b><span>客户先问价</span></div><div><b>12</b><span>销售主动报</span></div></div><ul class="list"><li><b>【小标题】</b>：【填事实】</li><li><b>【小标题】</b>：【填事实】</li></ul></div>
+<div class="card"><div class="tag">结论 02</div><h3>【填】</h3><div class="big">17<s>组 / 37 组</s></div><p>【填】</p><ul class="list"><li>【填】</li></ul></div>
+<div class="card"><div class="tag">结论 03</div><h3>【填】</h3><div class="big">2<s>组真正落地</s></div><p>【填】</p><ul class="list"><li>【填】</li></ul></div>
+</div>
+
+<div class="sec-head rv" style="margin:8px 0 18px"><h2 style="font-size:22px">N 组逐组节奏明细</h2><p class="lead">【填：表头字段解释】</p></div>
+<div class="tbl-bar rv">
+<button class="fbtn on" data-f="all">全部 37</button>
+<button class="fbtn" data-f="S6">S6 收口</button>
+<button class="fbtn" data-f="S5">S5 异议</button>
+<button class="fbtn" data-f="S4">S4 报价</button>
+<button class="fbtn" data-f="S3">S3 价值</button>
+<button class="fbtn" data-f="S2">S2 探需</button>
+<input id="tblSearch" type="search" placeholder="搜索客户 / 销售 / 特征">
+</div>
+<div class="tbl-wrap rv"><table id="stageTable">
+<thead><tr><th style="width:16%">客户</th><th style="width:8%">到哪一步</th><th style="width:9%">停留</th><th style="width:13%">首次报价</th><th>节奏特征</th><th style="width:9%">沉默后追</th></tr></thead>
+<tbody>
+<tr data-top="S6"><td class="cust">吹笛人<small>邓老师</small></td><td><span class="stg s6">逼单收口</span></td><td class="num"><b>11</b> 天</td><td class="num">8月5日 21:02</td><td class="tag">节奏最完整</td><td class="num">—</td></tr>
+<tr data-top="S4"><td class="cust">@平静<small>陈老师</small></td><td><span class="stg s4">方案报价</span></td><td class="num"><b>51</b> 天</td><td class="num">9月13日 10:48</td><td class="tag">到访信号未锁定</td><td class="num">51 天</td></tr>
+</tbody></table><div class="tbl-empty" id="tblEmpty" style="display:none">没有符合条件的记录，换个词试试。</div></div>
+
+<div class="sec-head rv" style="margin:40px 0 0"><h2 style="font-size:22px">四种典型节奏，四段原文</h2><p class="lead">【填】</p></div>
+<div class="rcases rv">
+<div class="rcase"><div class="rcase-h"><div class="rcase-kind">抢报</div><h4>【填：一句话概括这一组的节奏问题】</h4><p>【填：客户名 + 日期 + 事实】</p></div><div class="rcase-shot" data-zoom="抢报｜标题"><img src="assets/stage/r1_zhibao.png" alt="抢报" loading="lazy"><span class="zoom-tip">点开看完整对话</span></div><div class="rcase-ft">点击图片可放大查看完整对话</div></div>
+<div class="rcase"><div class="rcase-h"><div class="rcase-kind">报价即止</div><h4>【填】</h4><p>【填】</p></div><div class="rcase-shot" data-zoom="报价即止｜标题"><img src="assets/stage/r2_jiajia.png" alt="报价即止" loading="lazy"><span class="zoom-tip">点开看完整对话</span></div><div class="rcase-ft">点击图片可放大查看完整对话</div></div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 04 / 正面标杆
+     构成：qfun（筛选漏斗四步）→ 入选标准说明 → qwrap（片段卡，每段一张）
+     片段卡内部顺序固定：发生了什么 → 做了哪几件事 → 为什么有效 → 反面对照 → 可抄走的原话
+     ══════════════════════════════════════════════════════════ -->
+<section class="sec" id="good">
+<div class="sec-head rv"><div class="sec-no">PART 04 / 正面标杆</div><h2>同样的话，他们怎么说对了</h2><p class="lead">【填：怎么挑出来的】</p></div>
+<div class="qfun rv">
+<div class="step"><b>37</b><span>组对话全部通读</span></div>
+<div class="step"><b>15</b><span>组客户说过推进的话</span></div>
+<div class="step"><b>7</b><span>组真正走到收口</span></div>
+<div class="step"><b>4</b><span>组落地：交钱或到校</span></div>
+</div>
+<p class="lead rv" style="margin:-14px 0 30px;font-size:14px;color:var(--ink2)">入选标准三条，缺一不可：① 【填】；② 【填】；③ 【填】。</p>
+
+<div class="qwrap">
+<article class="qcard rv">
+<div class="qcard-h"><span class="qcard-no">片段一</span><h3>【填：客户说的那句话】</h3><div class="qcard-meta">客户名 ｜ 8.5 21:00 → 22:07 ｜ 67 分钟 ｜ 8.25 到校 ｜ 全程 233 条</div></div>
+<div class="qcard-body"><div class="qcard-txt">
+<div class="qblock"><div class="qlabel">发生了什么</div><p>【填：按时间顺序还原，带时间和原话】</p></div>
+<div class="qblock"><div class="qlabel">做了哪几件事</div><ul class="qacts">
+<li><i>①</i><span>【填：动作 + 为什么这个动作有效】</span></li>
+<li><i>②</i><span>【填】</span></li>
+<li><i>③</i><span>【填】</span></li>
+</ul></div>
+<div class="qblock"><div class="qlabel">为什么有效</div><p>【填：机制解释，不要重复事实】</p></div>
+<div class="qblock qopp"><div class="qlabel r">同一场景，没这么做的那组</div><p>【填：反面对照】</p></div>
+<div class="qblock qreuse"><div class="qlabel g">可以直接抄走的原话</div><p>「【填】」／「【填】」／「【填】」</p></div>
+</div>
+<div class="qcard-shot"><div class="inner"><div data-zoom="片段一 标题 ｜ 客户名｜时间｜条数"><img src="assets/good/q1.png" alt="片段一" loading="lazy"></div><div class="qshot-cap">片段一 原文截图，点击放大</div></div></div>
+</div></article>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 05 / 落地建议
+     .act 的 p4 类 = 红线项（视觉上加重）
+     ══════════════════════════════════════════════════════════ -->
+<section class="sec" id="actions">
+<div class="sec-head rv"><div class="sec-no">PART 05 / 落地</div><h2>N 条建议：先做工单，再谈话术</h2><p class="lead">【填】</p></div>
+<div class="acts rv">
+<div class="act"><div class="p">P1/P2/P9</div><div><h4>做成工单，不靠销售自觉</h4><p>【填】</p></div></div>
+<div class="act"><div class="p">P3</div><div><h4>课时、价格、开课日收成唯一数据源</h4><p>【填】</p></div></div>
+<div class="act p4"><div class="p">P4</div><div><h4>违规承诺直接拦截</h4><p>【填：红线类，最高优先级】</p></div></div>
+</div>
+<div class="endnote rv"><b>关于截图：</b>全部按原文逐字还原，未做内容改写。<br><b>关于判定：</b>每一条结论都能回溯到具体日期与原文句子；无法回溯的推测一律未写入。本报告不给销售打分——分数容易吵，动作不会。</div>
+</section>
+
+<footer>
+  <div>体德智训 · 招生对话质检报告　｜　【填：组数 + 条数】逐条通读</div>
+  <div>问题点 N 类 · 截图 N 张 · 节奏案例 N 组 · 正面片段 N 段</div>
+</footer>
+
+<div class="lb" id="lb">
+  <button class="lb-close" aria-label="关闭">×</button>
+  <img id="lbImg" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<script src="assets/app.js?v=6"></script>
+</body>
+</html>

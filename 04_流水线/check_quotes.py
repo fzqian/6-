@@ -1,0 +1,305 @@
+# -*- coding: utf-8 -*-
+"""引语核对器 —— 正文里的每一个「」，都必须能在同一张卡片右侧的截图里找到。
+
+用法：
+    python check_quotes.py ../web-report/index.html
+    python check_quotes.py ../web-report/index.html --data dialogs_all.json
+    python check_quotes.py ../web-report/index.html -v      # 逐卡列出核对过的引语
+
+为什么需要它
+────────────
+2026-11-09 出过的事故：正文写「客户回了：那就差不多 3 万块」，右侧截图却停在
+上一句 28700，图上根本没有这句。这不是笔误，是写法本身的结果——**正文按整组
+故事线写，截图只截了一段**。人眼看不过来 35 张图，必须机器核。
+
+原理
+────
+`shot.py` 出图时会在 PNG 旁边写一个同名 `.json` 侧写，记录这张图**实际渲染了
+哪几条原文**（含底部琥珀色标注）。本脚本：
+
+  1. 把 index.html 按卡片容器切开（.pcard 问题卡 / .qcard 片段卡 / .rcase 节奏卡）
+  2. 取该容器内所有 <img> 对应的 .json 文本，拼成「这张卡片图上有的内容」
+  3. 抽出容器里所有「…」，逐条比对
+
+三档结果
+────────
+  ✓ 图上能找到                    过
+  ✗A 原文里有、但这张图没截进来      硬错：把截图区间扩到那句，或把这句删掉
+  ✗B 原文里也没有                  硬错：引号里写成了概括，改回原话或去掉引号
+
+退出码：0 = 没有 ✗；1 = 有 ✗（check.py 第 10 项就用这个结果）
+"""
+import json
+import os
+import re
+import sys
+from html.parser import HTMLParser
+
+VOID = {"img", "br", "hr", "meta", "link", "input", "source", "area",
+        "base", "col", "embed", "param", "track", "wbr"}
+# 只有这几类容器「左边文字 / 右边截图」是配对的，其它 section 不参与核对
+#   .case   问题点案例块（左 .case-txt 右 .case-shot，一对一）
+#   .qcard  正面标杆片段卡
+#   .rcase  典型节奏卡
+CONTAINER = {"case", "qcard", "rcase"}
+LABEL = {"case": "案例块", "qcard": "片段卡", "rcase": "节奏卡"}
+
+STRIP = re.compile("[" + re.escape(
+    " \t\r\n\u3000，。、；：？！,.;:?!~～-—－–·…\"'‘’“”「」『』【】《》()（）[]"
+    # 加号/等号在原文里是 ➕ 🟰 ＋ ＝ 混用，统一当分隔符，只比字
+    "➕🟰＋＝+=／/×") + "]")
+QUOTE = re.compile(r"「([^」]{1,80})」")
+
+
+def norm(s):
+    """比对用的归一：去空白、去标点、去各类引号——只比字，不比标点。"""
+    return STRIP.sub("", s or "")
+
+
+# ---------------- 把 HTML 切成卡片 ----------------
+class CardSplit(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.depth = 0
+        self.open = []
+        self.cards = []
+        self.sec = None
+        self.secstack = []
+        self.skip = []      # 在 .qopp（对照段）里：引用的是另一位客户，不该拿本卡图核
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag in VOID:
+            if tag == "img" and a.get("src") and self.open:
+                self.open[-1]["imgs"].append(a["src"])
+            return
+        self.depth += 1
+        if tag == "section":
+            self.secstack.append((self.depth, a.get("id")))
+            if a.get("id"):
+                self.sec = a["id"]
+        cls = set((a.get("class") or "").split())
+        if "qopp" in cls:
+            self.skip.append(self.depth)
+        hit = cls & CONTAINER
+        if hit:
+            rec = {"cls": sorted(hit)[0], "depth": self.depth, "imgs": [],
+                   "text": [], "kids": [], "sec": self.sec,
+                   "parent": self.open[-1] if self.open else None}
+            if self.open:
+                self.open[-1]["kids"].append(rec)
+            self.cards.append(rec)
+            self.open.append(rec)
+
+    def handle_endtag(self, tag):
+        if tag in VOID:
+            return
+        while self.skip and self.skip[-1] >= self.depth:
+            self.skip.pop()
+        while self.open and self.open[-1]["depth"] >= self.depth:
+            self.open.pop()
+        while self.secstack and self.secstack[-1][0] >= self.depth:
+            self.secstack.pop()
+        self.sec = self.secstack[-1][1] if self.secstack else None
+        self.depth -= 1
+
+    def handle_data(self, data):
+        if self.open and not self.skip:
+            self.open[-1]["text"].append(data)
+
+
+def flatten(rec):
+    """卡片自身 + 所有子卡片的文字与图片（外层卡片要能核到内层图）。"""
+    txt, imgs = "".join(rec["text"]), list(rec["imgs"])
+    for k in rec["kids"]:
+        t, i = flatten(k)
+        txt += t
+        imgs += i
+    return txt, imgs
+
+
+def load_manifest(png_path):
+    j = os.path.splitext(png_path)[0] + ".json"
+    if not os.path.isfile(j):
+        return None
+    try:
+        return json.load(open(j, encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def here2():
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def find_data(html_dir, explicit=None):
+    """找全量对话 json，用来区分「原文有但没截」和「原文也没有」。"""
+    if explicit and os.path.isfile(explicit):
+        return os.path.abspath(explicit)
+    here = os.path.dirname(os.path.abspath(__file__))
+    for d in (os.getcwd(), html_dir, here, os.path.join(html_dir, "..")):
+        p = os.path.join(d, "dialogs_all.json")
+        if os.path.isfile(p):
+            return os.path.abspath(p)
+    return None
+
+
+def check(html_path, data_path=None, verbose=False):
+    html_path = os.path.abspath(html_path)
+    root = os.path.dirname(html_path)
+    h = open(html_path, encoding="utf-8").read()
+    # 「下一步」块里是建议话术，不是已经发生的原话——引号不该拿去对原文核。
+    # 只在核对前剥掉，页面本身不动。
+    h = re.sub(r'<div class="qblock qnext">.*?</(?:ol|ul|p)>\s*</div>', '', h, flags=re.S)
+
+    P = CardSplit()
+    P.feed(h)
+    if not P.cards:
+        return 0, ["找不到 .pcard / .qcard / .rcase 卡片容器，报告结构不对"], 0
+
+    data_path = find_data(root, data_path)
+    full = {}                                   # 客户 → 全量文本
+    if data_path:
+        try:
+            for g in json.load(open(data_path, encoding="utf-8")):
+                full[g["cust"]] = norm("".join(m["x"] for m in g["msgs"]))
+        except Exception as e:
+            print("  ! 读不了 --data：%s" % e)
+            data_path = None
+
+    # 第二个人（陈舒批）：无截图，引语改为对「该客户那一段会话原文」逐字核
+    cs = {}
+    for cand in (os.path.join(os.path.dirname(data_path or ""), "dialogs_cs.json"),
+                 os.path.join(root, "02_过程文件", "dialogs_cs.json"),
+                 os.path.join(root, "dialogs_cs.json"),
+                 os.path.join(here2(), "dialogs_cs.json")):
+        if cand and os.path.isfile(cand):
+            try:
+                for g in json.load(open(cand, encoding="utf-8")):
+                    cs[g["cust"]] = norm("".join(m["x"] for m in g["msgs"]))
+            except Exception as e:
+                print("  ! 读不了 dialogs_cs.json：%s" % e)
+            break
+
+    # 重点四组：同样无截图，引语对 dialogs_focus.json 逐字核
+    fc = {}
+    for cand in (os.path.join(os.path.dirname(data_path or ""), "dialogs_focus.json"),
+                 os.path.join(root, "02_过程文件", "dialogs_focus.json"),
+                 os.path.join(root, "dialogs_focus.json"),
+                 os.path.join(here2(), "dialogs_focus.json")):
+        if cand and os.path.isfile(cand):
+            try:
+                for g in json.load(open(cand, encoding="utf-8")):
+                    t = norm("".join(m["x"] for m in g["msgs"]))
+                    fc[g["cust"]] = t
+                    if " " in g["cust"].strip():
+                        fc[g["cust"].split()[0]] = t   # 「王永正  转介10.22」→「王永正」
+            except Exception as e:
+                print("  ! 读不了 dialogs_focus.json：%s" % e)
+            break
+
+    errs, warns, nquote = [], [], 0
+    # 外层容器只作分组用：只要有子容器（.case 嵌套在 .pcard 里），就只核最内层，
+    # 否则案例 1 的引语会被案例 2 的截图"碰巧"验证通过
+    deepest = [r for r in P.cards if not r["kids"]]
+    for idx, rec in enumerate(deepest, 1):
+        text, imgs = flatten(rec)
+        quotes = [q for q in QUOTE.findall(text) if len(norm(q)) >= 2]
+        if not quotes:
+            continue
+        nquote += len(quotes)
+
+        # 无截图批次（陈舒批 / 重点四组）：按卡片头里的客户昵称定位那一组原文逐字核
+        batch = {"cs": ("陈舒", cs), "focus": ("重点", fc)}.get(rec.get("sec") or "")
+        if batch:
+            tag, dic = batch
+            if not dic:
+                errs.append("%s 找不到该批语料（缺 dialogs_%s.json）"
+                            % (tag, "cs" if tag == "陈舒" else "focus"))
+                continue
+            head1 = "%s#%d" % (LABEL.get(rec["cls"], rec["cls"]), idx)
+            who = None
+            for name in dic:
+                if not name or name not in text:
+                    continue
+                if len(name) == 1 and re.match(r"[\u4e00-\u9fa5]", name):
+                    continue          # 单字中文昵称容易误匹配（如「夏」），跳过
+                if who is None or len(name) > len(who):
+                    who = name
+            if not who:
+                errs.append("%s 定位不到%s批的客户昵称（卡片头要写清是哪一组）" % (head1, tag))
+                continue
+            for q in dict.fromkeys(quotes):
+                if norm(q) in dic[who]:
+                    if verbose:
+                        print("    ✓ %s「%s」（%s %s）" % (head1, q, tag, who))
+                else:
+                    errs.append("%s「%s」→ %s「%s」那组原文里查无此句" % (head1, q, tag, who))
+            continue
+        corpus, miss_json, cust = [], [], None
+        for src in imgs:
+            png = os.path.normpath(os.path.join(root, src.split("?")[0]))
+            man = load_manifest(png)
+            if man is None:
+                miss_json.append(src)
+                continue
+            cust = cust or man.get("cust")
+            corpus.extend(man.get("texts") or [])
+            if man.get("note"):
+                corpus.append(man["note"])
+        body = norm("".join(corpus))
+        head = "%s#%d" % (LABEL.get(rec["cls"], rec["cls"]), idx)
+
+        for src in miss_json:
+            errs.append("%s 的图 %s 缺同名 .json 侧写 —— 重跑一遍 shot.py 就会生成" % (head, src))
+
+        bad_a, bad_b = [], []
+        for q in dict.fromkeys(quotes):
+            if norm(q) in body:
+                if verbose:
+                    print("    ✓ %s 「%s」" % (head, q))
+                continue
+            where = [c for c, t in full.items() if norm(q) in t] if full else []
+            if where:
+                bad_a.append((q, where))
+            else:
+                bad_b.append(q)
+        for q, where in bad_a:
+            errs.append("%s「%s」→ 原文在 %s 里，但这张图没截到（扩 --start/--end 或删掉这句）"
+                        % (head, q, "、".join(where[:3])))
+        for q in bad_b:
+            errs.append("%s「%s」→ 原文里查无此句，像是把概括写进了引号（改回原话或去掉引号）"
+                        % (head, q))
+        if verbose and not (bad_a or bad_b):
+            print("    ✓ %s 全部 %d 处引语都在这张卡片的截图里" % (head, len(quotes)))
+
+    return nquote, errs, len(deepest)
+
+
+def main():
+    args = [x for x in sys.argv[1:] if not x.startswith("-")]
+    verbose = any(x in ("-v", "--verbose") for x in sys.argv)
+    data = None
+    for i, x in enumerate(sys.argv):
+        if x == "--data" and i + 1 < len(sys.argv):
+            data = sys.argv[i + 1]
+            if data in args:
+                args.remove(data)
+    if not args:
+        print(__doc__)
+        return 2
+    n, errs, ncard = check(args[0], data, verbose)
+    print("  核对 %d 张卡片 / %d 处引语" % (ncard, n))
+    if errs:
+        for e in errs[:40]:
+            print("  ✗ %s" % e)
+        if len(errs) > 40:
+            print("  … 另有 %d 处，见上表规律" % (len(errs) - 40))
+        print("  ✗ %d 处引语在图上看不到，改完再交付" % len(errs))
+        return 1
+    print("  ✓ 正文引语全部能在对应截图里找到")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

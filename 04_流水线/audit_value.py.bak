@@ -1,0 +1,163 @@
+# -*- coding: utf-8 -*-
+"""价值传递专项页核查：页面上的数字、名单、48 行，能不能从 value.json 复算出来。
+
+用法：python audit_value.py 价值传递.html --data value.json
+"""
+import json
+import os
+import re
+import sys
+
+
+def main():
+    src = sys.argv[1] if len(sys.argv) > 1 else "价值传递.html"
+    data = "value.json"
+    if "--data" in sys.argv:
+        data = sys.argv[sys.argv.index("--data") + 1]
+    h = open(src, encoding="utf-8").read()
+    V = json.load(open(data, encoding="utf-8"))
+    R = V["rows"]
+
+    base = len([r for r in R if r[1] != "—"])
+    f3 = len([r for r in R if r[2] == 3])
+    o1 = len([r for r in R if r[3] >= 1])
+    l1 = len([r for r in R if r[4] == 1])
+    strict = len([r for r in R if r[2] == 3 and r[3] >= 1 and r[4] == 1 and r[5] == 0])
+    veto = len([r for r in R if r[5] == 1])
+
+    bad = []
+
+    # 1. hero 四个数字
+    hero = h[h.find('class="hero-stats"'):h.find('class="hero-quote"')]
+    nums = re.findall(r"<b>(\d+)</b>", hero)
+    want = [str(f3), str(o1), str(l1), str(strict)]
+    if nums != want:
+        bad.append("hero 四个数字是 %s，复算是 %s" % (nums, want))
+
+    # 2. 漏斗三个数
+    fun = h[h.find('class="funnel'):h.find('</section>', h.find('class="funnel'))]
+    fn = re.findall(r'fn-fill" style="width:\d+%">(\d+)<', fun)
+    if fn[:3] != [str(f3), str(o1), str(l1)]:
+        bad.append("漏斗是 %s，复算是 %s" % (fn[:3], [f3, o1, l1]))
+
+    # 3. 表格 48 行，且客户名齐全
+    tb = h[h.find('id="table"'):h.find('id="end"')]
+    rows = re.findall(r"<tr><td>([^<]+)</td><td>", tb)
+    if len(rows) != len(R):
+        bad.append("表格 %d 行，value.json 有 %d 组" % (len(rows), len(R)))
+    miss = [r[0] for r in R if r[0] not in rows]
+    if miss:
+        bad.append("表里少了：%s" % "、".join(miss))
+
+    # 4. 排除组不进分母
+    note = h[h.find('class="hero-meta"'):h.find('</header>')]
+    note = re.sub(r"<[^>]+>", "", note)
+    if str(base) not in note:
+        bad.append("页首没写分母 %d（应写「分母 %d 组」）" % (base, base))
+
+    # 5. 一票否决名单
+    if veto:
+        for name in [r[0] for r in R if r[5] == 1]:
+            if name not in h:
+                bad.append("否决名单里的 %s 在页面上找不到" % name)
+
+    # 6. 八类分布（V3 / 缺在哪）
+    if 'id="combo"' in h:
+        seg = h[h.find('id="combo"'):h.find('id="good"')]
+        LAB = {(1, 1, 1): "三项全过", (1, 1, 0): "缺落点", (1, 0, 1): "缺出口",
+               (0, 1, 1): "缺形态", (1, 0, 0): "只有形态", (0, 1, 0): "只有出口",
+               (0, 0, 1): "只有落点", (0, 0, 0): "三项全无"}
+        want, miss = {}, {}
+        for r in R:
+            if r[1] == "—":
+                continue
+            k = (1 if r[2] == 3 else 0, 1 if r[3] >= 1 else 0, 1 if r[4] == 1 else 0)
+            want[LAB[k]] = want.get(LAB[k], 0) + 1
+            miss[3 - sum(k)] = miss.get(3 - sum(k), 0) + 1
+        got = {}
+        for m in re.finditer(r'<div class="fn-lbl"><b>([^<]+)</b>[^<]*</div>.{0,400}?fn-drop"[^>]*>(\d+) 组', seg, re.S):
+            got[m.group(1)] = int(m.group(2))
+        if len(got) != 8:
+            bad.append("八类分布只解析到 %d 行（应为 8 行）" % len(got))
+        diff = ["%s 页面 %d / 复算 %d" % (k, got.get(k, -1), v)
+                for k, v in want.items() if got.get(k, -1) != v]
+        if diff:
+            bad.append("八类分布对不上：" + "；".join(diff))
+        # 缺 n 项四张卡
+        cards = re.findall(r'<div class="tag">缺 (\d) 项</div>\s*<div class="big">(\d+)<', seg)
+        cmap = {int(a): int(b) for a, b in cards}
+        if len(cmap) != 4:
+            bad.append("「缺 n 项」只有 %d 张卡（应为 4 张）" % len(cmap))
+        cdiff = ["缺 %d 项 页面 %s / 复算 %d" % (k, cmap.get(k, -1), v)
+                 for k, v in miss.items() if cmap.get(k, -1) != v]
+        if cdiff:
+            bad.append("缺项汇总对不上：" + "；".join(cdiff))
+        print("八类分布：%s ｜ 缺 0/1/2/3 项：%s" % (
+            " ".join("%s%d" % (LAB[k], want.get(LAB[k], 0)) for k in
+                     sorted(LAB, key=lambda x: -want.get(LAB[x], 0))),
+            "/".join(str(miss.get(i, 0)) for i in range(4))))
+
+    # 7. 第二个人（陈舒批）
+    cs_path = os.path.join(os.path.dirname(os.path.abspath(data)), "value_cs.json")
+    if 'id="cs"' in h and os.path.isfile(cs_path):
+        C = json.load(open(cs_path, encoding="utf-8"))["rows"]
+        n = len(C)
+        cf3 = sum(1 for r in C if r[2] == 3)
+        co = sum(1 for r in C if r[3] >= 1)
+        cl = sum(1 for r in C if r[4] == 1)
+        cst = sum(1 for r in C if r[2] == 3 and r[3] >= 1 and r[4] == 1)
+        seg = h[h.find('<section class="sec" id="cs"'):]
+        seg = seg[:seg.find("</section>")]
+        dm = re.search(r"（分母 (\d+)）", seg)
+        if not dm:
+            bad.append("陈舒批找不到分母标注")
+        elif int(dm.group(1)) != n:
+            bad.append("陈舒批分母页面 %s / 复算 %d" % (dm.group(1), n))
+        cfn = re.findall(r'fn-fill" style="width:\d+%">(\d+)<', seg)
+        if cfn[:4] != [str(cf3), str(co), str(cl), str(cst)]:
+            bad.append("陈舒批漏斗 %s / 复算 %s" % (cfn[:4], [cf3, co, cl, cst]))
+        craw = re.findall(r"<td><b>([^<]+)</b></td><td class='num'>(\d+) / (\d+)（\d+%）</td>"
+                          r"<td class='num'>(\d+) / (\d+)（\d+%）</td>", seg)
+        want2 = {}
+        for r in C:
+            k = (1 if r[2] == 3 else 0, 1 if r[3] >= 1 else 0, r[4])
+            want2[k] = want2.get(k, 0) + 1
+        if len(craw) != 8:
+            bad.append("陈舒批八类表只解析到 %d 行（应为 8 行）" % len(craw))
+        else:
+            got2 = [int(x[3]) for x in craw]
+            order2 = [(1, 1, 1), (1, 1, 0), (1, 0, 1), (0, 1, 1), (1, 0, 0), (0, 1, 0), (0, 0, 1), (0, 0, 0)]
+            exp2 = [want2.get(k, 0) for k in order2]
+            if got2 != exp2:
+                bad.append("陈舒批八类分布 %s / 复算 %s" % (got2, exp2))
+            if sum(got2) != n:
+                bad.append("陈舒批八类相加 %d ≠ 分母 %d" % (sum(got2), n))
+        # 形态齐全过率那句：子渝 a/b 与 陈舒 c/d 必须与各自批次一致
+        hm = re.search(r"三项全过率 (\d+)%（子渝 (\d+)/(\d+)）对 (\d+)%（陈舒 (\d+)/(\d+)）", seg)
+        if not hm:
+            bad.append("陈舒批找不到「形态齐全过率」那句")
+        else:
+            a, b1, b2, c, d1, d2 = [int(x) for x in hm.groups()]
+            if b2 != f3 or a != round(b1 * 100.0 / b2):
+                bad.append("子渝形态齐全过率 %d%%（%d/%d）与复算不符" % (a, b1, b2))
+            if d2 != cf3 or c != round(d1 * 100.0 / d2):
+                bad.append("陈舒形态齐全过率 %d%%（%d/%d）与复算不符" % (c, d1, d2))
+        print("陈舒批复算：分母 %d ｜ 形态 %d ｜ 出口 %d ｜ 落点 %d ｜ 三项全过 %d"
+              % (n, cf3, co, cl, cst))
+    elif 'id="cs"' in h:
+        bad.append("页面有 #cs 板块，但找不到 value_cs.json")
+
+    print("复算：分母 %d ｜ 形态 %d ｜ 出口 %d ｜ 落点 %d ｜ 三项全过 %d ｜ 否决 %d"
+          % (base, f3, o1, l1, strict, veto))
+    print("=" * 46)
+    if bad:
+        print("✗ 页面与 value.json 对不上：")
+        for b in bad:
+            print("   - %s" % b)
+        return 1
+    print("✓ 四个数字 / 漏斗 / 48 行 / 否决名单，全部可复算")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
